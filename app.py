@@ -31,6 +31,12 @@ study_per_day = df["weekly_self_study_hours"] / 7
 df["study_per_day"] = study_per_day
 print(df.head())
 
+df["active_students"] = (
+    (df["weekly_self_study_hours"] >= 15) &
+    (df["class_participation"] >= 7)
+)
+print(df.head())
+df["active_students"] = df["active_students"].astype(int)
 
 
 # 4️⃣ 
@@ -42,17 +48,17 @@ sns.boxplot(data=df, y="class_participation", ax=axs[1,1], color="lightgreen")
 sns.boxplot(data=df, y="total_score", ax=axs[2,0], color="lightblue")
 sns.countplot(data=df, x="grade", ax=axs[2,1], color="plum")
 plt.tight_layout()
-#plt.show()
+plt.show()
 
 numeric_cols = df.drop(columns = ["student_id"])
 corr = numeric_cols.corr()
 print(corr)
 sns.heatmap(corr, annot=True, cmap="coolwarm", fmt=".2f")
 plt.suptitle("Correlation between each numeric feature and grade")
-#plt.show()
+plt.show()
 
 df_sample = numeric_cols.sample(n=100, random_state=42)  # 10k rows instead of 1M
-X_sample = df_sample[['weekly_self_study_hours', 'study_per_day', 'attendance_percentage', 'class_participation', 'total_score']]
+X_sample = df_sample[['weekly_self_study_hours', 'study_per_day', 'attendance_percentage', 'class_participation', 'total_score', 'active_students']]
 y_sample = df_sample['grade']
 mi_scores = mutual_info_classif(X_sample, y_sample, discrete_features=False, random_state=42)
 print(f"miutual information of random 1000 samples : {mi_scores}")
@@ -142,3 +148,5 @@ for p in axes[1].patches:
                      ha='center', va='bottom')
 plt.tight_layout()
 plt.show()
+
+
